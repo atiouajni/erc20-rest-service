@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jService;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.protocol.ipc.UnixIpcService;
@@ -50,6 +51,23 @@ public class Application {
         }
         return Quorum.build(web3jService);
     }
+    
+    @Bean
+    Web3j web3j() {
+    	 String nodeEndpoint = nodeConfiguration.getNodeEndpoint();
+         Web3jService web3jService;
+    	if (nodeEndpoint == null || nodeEndpoint.equals("")) {
+            web3jService = new HttpService();
+        } else if (nodeEndpoint.startsWith("http")) {
+            web3jService = new HttpService(nodeEndpoint);
+        } else if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
+            web3jService = new WindowsIpcService(nodeEndpoint);
+        } else {
+            web3jService = new UnixIpcService(nodeEndpoint);
+        }
+    	return Web3j.build(web3jService);
+    }
+    
 
     @Bean
     public Docket lenderApi() {

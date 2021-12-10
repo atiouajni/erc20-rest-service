@@ -13,7 +13,9 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
-
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.quorum.Quorum;
 import org.web3j.quorum.tx.ClientTransactionManager;
@@ -37,6 +39,8 @@ public class ContractService {
         this.quorum = quorum;
         this.nodeConfiguration = nodeConfiguration;
     }
+    @Autowired
+    Web3j web3j;
 
     public NodeConfiguration getConfig() {
         return nodeConfiguration;
@@ -125,6 +129,14 @@ public class ContractService {
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+    
+    public String nativeBalanceOf(String ownerAdress) throws InterruptedException, ExecutionException {
+    	EthGetBalance ethGetBalance = web3j.ethGetBalance(ownerAdress, DefaultBlockParameterName.LATEST)
+    	  .sendAsync()
+    	  .get();
+
+    	return ethGetBalance.getBalance().toString();
     }
 
     public String symbol(String contractAddress) throws Exception {

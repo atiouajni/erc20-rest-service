@@ -135,6 +135,14 @@ public class Controller {
             @PathVariable String ownerAddress) throws Exception {
         return ContractService.balanceOf(contractAddress, ownerAddress);
     }
+    
+    @ApiOperation("Get Ethereum balance for address")
+    @RequestMapping(
+            value = "/balanceOf/{ownerAddress}", method = RequestMethod.GET)
+    String nativeBalanceOf(
+            @PathVariable String ownerAddress) throws Exception {
+        return ContractService.nativeBalanceOf(ownerAddress);
+    }
 
     @ApiOperation("Get token symbol")
     @RequestMapping(value = "/{contractAddress}/symbol", method = RequestMethod.GET)
